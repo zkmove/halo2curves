@@ -69,11 +69,11 @@ macro_rules! new_curve_impl {
             impl $crate::serde::Compressed<$name_affine> for [<$name:upper Compressed >] {
                 const CONFIG: $crate::serde::CompressedFlagConfig = $flag_config;
                 fn sign(c: &$name_affine) -> subtle::Choice {
-                    Choice::from(c.y.to_repr()[0] as u8 & 1) & !c.is_identity()
+                    Choice::from(if c.y <= -(c.y) {0} else {1}) & !c.is_identity()
                 }
                 fn resolve(x: $base, sign_set: Choice) -> CtOption<$name_affine> {
                     $name_affine::y2(x).sqrt().map(|y| {
-                        let y = $base::conditional_select(&y, &-y, sign_set ^ Choice::from(y.to_repr()[0] as u8 & 1));
+                        let y = $base::conditional_select(&y, &-y, sign_set ^ Choice::from(if y <= -(y) {0} else {1}));
                         $name_affine { x, y }
                     })
                 }
