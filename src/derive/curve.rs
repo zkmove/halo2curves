@@ -73,7 +73,7 @@ macro_rules! new_curve_impl {
                 }
                 fn resolve(x: $base, sign_set: Choice) -> CtOption<$name_affine> {
                     $name_affine::y2(x).sqrt().map(|y| {
-                        let y = $base::conditional_select(&y, &-y, sign_set ^ Choice::from(if y <= -(y) {0} else {1}));
+                        let y = $base::conditional_select(&-y, &y, sign_set ^ Choice::from(if y <= -(y) {0} else {1}));
                         $name_affine { x, y }
                     })
                 }
